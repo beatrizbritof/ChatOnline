@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whatsapp 1.2 com Node e Socket</title>
+    <link rel="icon" type="imagens/png" href="imagens/whatsapp.png" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-image: url(imagens/background.jpg);
+        }
+
+        header {
+            background-color: #f0f2f5;
+        }
+
+        #imagem_pessoa2 {
+            width: 40px;
+            height: 40px;
+            background-color: cadetblue;
+        }
+
+        #pessoa1 {
+            text-align: right;
+            background-color: #d8fdd5;
+            margin: 5px 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            width: 90%;
+        }
+
+        #pessoa2 {
+            text-align: left;
+            background-color: #fff;
+            margin: 5px 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            width: 90%;
+        }
+
+        .div_formulario {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            background-color: #f0f2f5;
+        }
+
+        form {
+            padding: 10px;
+            width: 100%;
+        }
+
+        #nome {
+            width: 99%;
+        }
+
+        #mensagem {
+            width: 90%;
+        }
+
+        #nome,
+        #mensagem {
+            border: none;
+            border-radius: 5px;
+            padding: 7px;
+            margin: 5px;
+        }
+
+        #botao_envio {
+            background-color: #02b29d;
+            border: none;
+            border-radius: 100px;
+            width: 27px;
+            height: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <img id="imagem_pessoa2" src="imagens/senai.png" alt="">
+        <span id="teste">Miss</span>
+        <a href="cadaxtro.html">a</a>
+        <a href="index.html">b</a>
+    </header>
+    <ul id="mensagens"></ul>
+    <div class="div_formulario">
+        <form>
+            <input type="text" id="nome" placeholder="Seu nome de usuário" maxlength="20">
+            <br>
+            <input type="text" id="mensagem" placeholder="Sua Mensagem" maxlength="2000">
+
+            <button id="botao_envio">Ir</button>
+        </form>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+    var newNome = localStorage.getItem("nome");
+    var bla = document.getElementById("teste");
+    
+       bla.innerText = newNome;
+   
+
+//Cria uma instância do Socket.IO
+    const socket = io();
+
+    //Seleciona o input do nome do usuário
+    const nomeInput = document.getElementById('nome');
+    //Seleciona o input da mensagem
+    const mensagemInput = document.getElementById('mensagem');
+    //Seleciona a lista de mensagens
+    const mensagens = document.getElementById('mensagens');
+
+    //Adiciona um evento para o envio do formulário
+    document.querySelector('form').addEventListener('submit', evento => {
+        //Previne o envio padrão do formulário para não atualizar a página
+        evento.preventDefault();
+        //Obptem o valor do input do nome do usuário
+        const nome = nomeInput.value;
+        //Obtém o valor do input da mensagem
+        const mensagem = mensagemInput.value;
+
+        //Método JAVASCRIPT que verifica os valores válido (Não está em branco os campos)
+        //EMIT envia um evento chamado "chat message" com um objeto contendo os valores
+        //TRIM() é um método que remove os espaços em branco do inicio ao fim de uma string
+        nome.trim() && mensagem.trim() && socket.emit('chat message', { nome, mensagem });
+        //Limpa o input da mensagem
+        mensagemInput.value = '';
+        //Desabilita o input do nome do usuário após a primeira mensagem
+        nomeInput.disabled = true;
+    });
+
+
+    document.addEventListener("keypress", function (e) {
+        if (e.key === 'Enter') {
+            // evento.preventDefault();
+
+            const nome = nomeInput.value;
+            //Obtém o valor do input da mensagem
+            const mensagem = mensagemInput.value;
+
+            //Método JAVASCRIPT que verifica os valores válido (Não está em branco os campos)
+            //EMIT envia um evento chamado "chat message" com um objeto contendo os valores
+            //TRIM() é um método que remove os espaços em branco do inicio ao fim de uma string
+            nome.trim() && mensagem.trim() && socket.emit('chat message', { nome, mensagem });
+            //Limpa o input da mensagem
+            mensagemInput.value = '';
+            //Desabilita o input do nome do usuário após a primeira mensagem
+            nomeInput.disabled = true;
+        }
+    });
+
+    //Adiciona um evento de mensagem recebido para o servidor
+    socket.on('chat message', dados => {
+        //Cria um elemento de lista para exibir a mensagem
+        const lista = document.createElement('li');
+        lista.style.listStyle = 'none';
+        lista.style.width = "95%"
+        lista.style.margin = "0 auto"
+        lista.style.marginTop = "5px"
+        //Atribui uma ID de acordo com o seu nome de usuário
+        if (dados.nome === nomeInput.value) {
+            lista.setAttribute('id', 'pessoa1')
+        } else {
+            lista.setAttribute('id', 'pessoa2')
+        }
+        //Define o texto da mensagem
+        // lista.textContent = `${dados.nome}\n ${dados.mensagem}\n`;
+        lista.textContent = `${dados.mensagem}`
+
+        //Adiciona o elemento de mensagens
+        mensagens.appendChild(lista);
+    })
+</script>
+
+</html>

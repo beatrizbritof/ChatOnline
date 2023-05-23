@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        #imagem {
+            width: 440px;
+            height: 440px;
+            background-color: aqua;
+            background-image: url(https://pm1.narvii.com/7061/94a9e73f84c28d8c8cb26d1aca69edec13075dfer1-500-500v2_00.jpg);
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 30px;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            opacity: 0;
+        }
+    </style>
+    <title>Document</title>
+</head>
+
+<body>
+    <header>
+        <!-- <img id="imagem_pessoa2" src="imagens/senai.png" alt=""> -->
+        <span>Miss</span>
+        <a href="cadaxtro.html">a</a>
+        <a href="index.html">b</a>
+    </header>
+
+    <div id="imagem">
+        <input type="file" id="escolherimg">
+    </div>
+
+    <form action="" onsubmit="psubmit()">
+        <input type="text" id="nome" placeholder="Seu nome de usuário" maxlength="20">
+        <br>
+        <button type="submit" onclick="enviarDados()">envio</button>
+    </form>
+
+    <script>
+        var teste = '';
+
+        const fileInput = document.getElementById('escolherimg');           
+        fileInput.addEventListener('change', function () {
+            const selectedFile = fileInput.files[0];
+            const fileUrl = URL.createObjectURL(selectedFile);
+            teste = fileUrl;
+            console.log(fileUrl);
+        });
+
+        console.log(teste)
+
+        function psubmit() {
+            var teste = document.getElementById("nome").value;
+            localStorage.setItem("nome", teste);
+
+        }
+
+
+
+        /////////////////////////////////////////////////////////////////////////////
+        //Função atualizar imagem
+        /* document.getElementById("escolherimg").addEventListener("change", function () {
+             const file = this.files[0];
+             const reader = new FileReader();
+             reader.addEventListener("load", function () {
+                 reduceImageQuality(reader.result, 0.5).then(function (result) {
+                     document.getElementById("imagem").style.backgroundImage = `url(${result})`;
+                     lerImagem(result);
+                 });
+             });
+             reader.readAsDataURL(file);
+         });
+ 
+         function lerImagem(imagem) {
+             imagemProd = imagem;
+             console.log(document.getElementById("imagem").style.backgroundImage)
+         }*/
+        ////////////////////////////////////////////////////////////////////////////
+
+
+
+        //cadastrar dados
+        function enviarDados() {
+            const nome = document.getElementById('nome').value;
+            const foto = document.getElementById('imagem').innerHTML;
+
+            fetch('http://localhost:3000/cadastros', {
+                method: 'POST', //método HTTP utilizado
+
+                headers: {
+                    'Content-Type': 'application/json'
+                    //isso aqui é o tipo de arquivo que será enviado/carregado lá
+                },
+                body: JSON.stringify({ nome: nome, foto: imagem })
+            })
+                .then(resposta => resposta.json(),
+                    alert("pessoa cadastrada com sucesso")
+                    /*window.location.reload()*/
+                );
+        }
+    </script>
+</body>
+
+</html>
