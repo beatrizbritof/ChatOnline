@@ -6,181 +6,328 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whatsapp 1.2 com Node e Socket</title>
-    <link rel="icon" type="imagens/png" href="imagens/whatsapp.png" />
     <style>
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-        body {
-            background-image: url(imagens/background.jpg);
-        }
-
-        header {
-            background-color: #f0f2f5;
-        }
-
-        #imagem_pessoa2 {
-            width: 40px;
-            height: 40px;
-            background-color: cadetblue;
-        }
-
-        #pessoa1 {
-            text-align: right;
-            background-color: #d8fdd5;
-            margin: 5px 10px;
-            padding: 5px 10px;
-            border-radius: 5px;
-            width: 90%;
-        }
-
-        #pessoa2 {
+        #msgDoCorrespondente {
             text-align: left;
-            background-color: #fff;
-            margin: 5px 10px;
+            background-color: #ececec;
+            margin: 10px 10px;
             padding: 5px 10px;
             border-radius: 5px;
-            width: 90%;
+            min-width: 90%;
         }
 
-        .div_formulario {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            display: flex;
-            background-color: #f0f2f5;
-        }
-
-        form {
-            padding: 10px;
-            width: 100%;
-        }
-
-        #nome {
-            width: 99%;
-        }
-
-        #mensagem {
-            width: 90%;
-        }
-
-        #nome,
-        #mensagem {
-            border: none;
+        #msgDoUsuario {
+            text-align: right;
+            background-color: #a4a4a4;
+            margin: 15px 10px;
+            padding: 5px 10px;
             border-radius: 5px;
-            padding: 7px;
+            max-width: 100%;
+            position: relative
+        }
+
+        #msgDoUsuario:first-of-type {
+            margin-top: 40px;
+        }
+
+
+        #nomeChat,
+        #mensagemChat {
+            padding: .25%;
+            padding-left: 1%;
+            margin: .3%;
+            width: 90%;
+            border-radius: 100px;
+            border: none;
+        }
+
+        #nomeChat::placeholder,
+        #mensagemChat::placeholder {
+            padding: .2%;
+        }
+
+        #nomeChat:focus,
+        #mensagemChat:focus {
+            outline: 2px solid grey;
+            outline-offset: -3.2px;
+        }
+
+        #alinhaMensagem {
+            border: 2px solid black;
+            justify-content: center;
+            display: flex;
+            width: 80%;
+            height: 53.6em;
+            overflow-y: scroll;
+        }
+
+        #mensagens {
+            margin: 0 auto;
+            width: 100%;
+            justify-content: flex-end;
+            position: relative;
+        }
+
+
+        #formularioChat {
+            background-color: #a4a4a4;
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            border: none;
+            width: 80%;
+            padding: 1%;
+            height: 11.4%;
+        }
+
+        #registrosChat {
+           /* background-color: rgb(238, 238, 238);*/
+            width: 20%;
+            height: fit-content;
+            overflow-y: scroll;
+            margin: 10px;
+        }
+
+        #inputFile {
+            background-image: url(imagens/chat/icons8-usuário-homem-com-círculo-96.png);
+            height: 30px;
+            background-size: cover;
+        }
+
+        #cardRegistro {
+            padding: 5px;
+            height: 100%;
+            width: 100%;
+            flex-direction: row-reverse;
+            align-items: center;
             margin: 5px;
         }
 
-        #botao_envio {
-            background-color: #02b29d;
-            border: none;
-            border-radius: 100px;
-            width: 27px;
-            height: 25px;
+        .imagemPerfilChat {
+            border-radius: 60px;
+            height: 70px;
+            width: 70px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        #caixaProfileChat {
+            height: 20em;
+            width: 16em;
+            box-shadow: 10px 10px 0px -4px rgba(0, 0, 0, 0.75);
+            background-color: #ececec;
+            border-radius: 20px;
+            position: relative;
+            z-index: 1;
+            margin-left: 900px;
+            margin-top: 250px;
+            display: none;
+        }
+
+        #fecharProfile,
+        #imgCantoSuperiorChat {
+            cursor: pointer;
         }
     </style>
 </head>
 
-<body>
-    <header>
-        <img id="imagem_pessoa2" src="imagens/senai.png" alt="">
-        <span id="teste">Miss</span>
-        <a href="cadaxtro.html">a</a>
-        <a href="index.html">b</a>
-    </header>
-    <ul id="mensagens"></ul>
-    <div class="div_formulario">
-        <form>
-            <input type="text" id="nome" placeholder="Seu nome de usuário" maxlength="20">
-            <br>
-            <input type="text" id="mensagem" placeholder="Sua Mensagem" maxlength="2000">
-
-            <button id="botao_envio">Ir</button>
-        </form>
+<body style="background-color: #3b3b3b;" onload="avisoLoadChat()">
+    <div style="background-color: black; width: 100%; height: 50px; display: flex; justify-content: center;">
+        <div style="display: flex; width: 95%; justify-content: space-between; margin-top: 2.5px;">
+            <a href="index.html"><img style="margin-top: 7%; height: 80%;" src="imagens/chat/icons8-à-esquerda-dentro-de-um-círculo-52.png" alt=""></a>
+            <img src="imagens/chat/iconFotoPadrao.png" id="imgCantoSuperiorChat" height="100%"
+                onclick="apareceCaixaProfile()" alt="foto de perfil">
+            <input type="text" id="meuId" style="display: none;">
+        </div>
     </div>
+
+    <main style="display: flex;">
+
+        <!-- caixinha de profile -->
+        <div id="caixaProfileChat">
+            <div style="width: 95%; display: inline-flex; justify-content: flex-end; margin-top: 5%;">
+                <img src="imagens/chat/icons8-close-32.png" id="fecharProfile" onclick="fechaCaixaProfile()"
+                    style="width: 12%;" alt="">
+            </div>
+            <div style="display: flex; justify-content: center; margin-top: 5%;">
+                <label for="inputFile" style="color: white;"><img id="inserirImagem"
+                        src="imagens/chat/iconFotoPadrao.png"
+                        style="border-radius: 100px; height: 10em; width: 10em; display: none;" alt="">
+                    <input type="file" id="inputFile" placeholder="b" style="display: none;">
+                </label>
+            </div>
+            <br>
+            <div style="display: flex; justify-content: center;">
+                <p>Seu nome de usuário: <span id="nomeUsuarioProfile">nulo</span></p>
+            </div>
+        </div>
+
+
+        <div id="registrosChat" style="display: flex;">
+            <div id="cardRegistro"></div>
+        </div>
+
+        <div id="alinhaMensagem">
+            <div id="mensagens"></div>
+        </div>
+        <form id="formularioChat">
+            <input type="text" id="nomeChat" placeholder="Seu nome de usuário" maxlength="20">
+            <br>
+            <div style="display: inline-flex; width: 100%;">
+                <input type="text" id="mensagemChat" placeholder="Envie uma mensagem" maxlength="2000">
+                <button
+                    style="border: none; background: none; height: fit-content; margin-top: 7px; cursor: pointer;"><img
+                        height="20px" src="imagens/chat/icons8-enviado-32.png" alt=""></button>
+            </div>
+        </form>
+    </main>
 </body>
 <script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    var newNome = localStorage.getItem("nome");
-    var bla = document.getElementById("teste");
-    
-       bla.innerText = newNome;
-   
-
-//Cria uma instância do Socket.IO
-    const socket = io();
+    // para que serve o emit? o emit serve para enviarmos uma função para o servidor
+    // para que serve o on? o on serve para quando a função tiver sido verificada e deve ser executada
+    //Cria uma instância do Socket.IO
+    const socket = io()
 
     //Seleciona o input do nome do usuário
-    const nomeInput = document.getElementById('nome');
+    const nomeInputChat = document.getElementById('nomeChat');
     //Seleciona o input da mensagem
-    const mensagemInput = document.getElementById('mensagem');
+    const mensagemInputChat = document.getElementById('mensagemChat');
     //Seleciona a lista de mensagens
     const mensagens = document.getElementById('mensagens');
 
+    socket.emit('preenche id', {});
+
     //Adiciona um evento para o envio do formulário
-    document.querySelector('form').addEventListener('submit', evento => {
-        //Previne o envio padrão do formulário para não atualizar a página
+    document.querySelector('#formularioChat').addEventListener('submit', evento => {
         evento.preventDefault();
-        //Obptem o valor do input do nome do usuário
-        const nome = nomeInput.value;
-        //Obtém o valor do input da mensagem
-        const mensagem = mensagemInput.value;
 
-        //Método JAVASCRIPT que verifica os valores válido (Não está em branco os campos)
-        //EMIT envia um evento chamado "chat message" com um objeto contendo os valores
-        //TRIM() é um método que remove os espaços em branco do inicio ao fim de uma string
-        nome.trim() && mensagem.trim() && socket.emit('chat message', { nome, mensagem });
-        //Limpa o input da mensagem
-        mensagemInput.value = '';
-        //Desabilita o input do nome do usuário após a primeira mensagem
-        nomeInput.disabled = true;
-    });
+        //disponibiliza a adição de uma foto de perfil para o usuário
+        document.querySelector("#inserirImagem").style.display = 'block'
 
+        const nomeChat = nomeInputChat.value;
+        const mensagemChat = mensagemInputChat.value;
 
-    document.addEventListener("keypress", function (e) {
-        if (e.key === 'Enter') {
-            // evento.preventDefault();
+        nomeChat.trim() && mensagemChat.trim() && socket.emit('chat message', { nomeChat, mensagemChat });
+        mensagemInputChat.value = '';
 
-            const nome = nomeInput.value;
-            //Obtém o valor do input da mensagem
-            const mensagem = mensagemInput.value;
-
-            //Método JAVASCRIPT que verifica os valores válido (Não está em branco os campos)
-            //EMIT envia um evento chamado "chat message" com um objeto contendo os valores
-            //TRIM() é um método que remove os espaços em branco do inicio ao fim de uma string
-            nome.trim() && mensagem.trim() && socket.emit('chat message', { nome, mensagem });
-            //Limpa o input da mensagem
-            mensagemInput.value = '';
-            //Desabilita o input do nome do usuário após a primeira mensagem
-            nomeInput.disabled = true;
+        if (nomeInputChat.disabled == false) {
+            nomeInputChat.disabled = true;
+            document.querySelector("#caixaProfileChat").style.display = 'block'
+            document.querySelector("#caixaProfileChat").style.position = 'absolute'
+            nomeChat.trim() && socket.emit('card', { nomeChat });
         }
     });
 
-    //Adiciona um evento de mensagem recebido para o servidor
+    socket.on('preenche id', infos => {
+        setarMeuId(infos.id)
+    })
+
     socket.on('chat message', dados => {
-        //Cria um elemento de lista para exibir a mensagem
-        const lista = document.createElement('li');
-        lista.style.listStyle = 'none';
-        lista.style.width = "95%"
-        lista.style.margin = "0 auto"
-        lista.style.marginTop = "5px"
-        //Atribui uma ID de acordo com o seu nome de usuário
-        if (dados.nome === nomeInput.value) {
-            lista.setAttribute('id', 'pessoa1')
+        const lista = document.createElement('div');
+        if (dados.nomeChat === nomeInputChat.value) {
+            lista.setAttribute('id', 'msgDoUsuario')
         } else {
-            lista.setAttribute('id', 'pessoa2')
+            lista.setAttribute('id', 'msgDoCorrespondente')
         }
-        //Define o texto da mensagem
-        // lista.textContent = `${dados.nome}\n ${dados.mensagem}\n`;
-        lista.textContent = `${dados.mensagem}`
-
-        //Adiciona o elemento de mensagens
+        lista.innerHTML = `${dados.nomeChat}<br> ${dados.mensagemChat}`;
         mensagens.appendChild(lista);
     })
+
+    socket.on('card', dados => {
+        var nome = dados.nomeChat;
+        //document.querySelector("#nomeUsuarioProfile").innerHTML = dados.nomeChat; //isso aqui só seta no span do nome do usuário no card
+
+        var divPrincipalRegistro = document.getElementById("cardRegistro");
+
+        var registroEntrada = document.createElement("div");
+        registroEntrada.setAttribute("id", 'caixaIndividualCantoPerfilChat')
+        registroEntrada.style.borderBottom = '3px solid red'
+        registroEntrada.style.backgroundColor = 'rgb(238, 238, 238)'
+        registroEntrada.style.padding = '5%'
+        registroEntrada.style.marginBottom = '30px'
+        registroEntrada.style.width = '100%'
+        registroEntrada.innerHTML = `<p style="margin-top: 25px">${nome}</p>` + "<pre>  </pre>";
+    registroEntrada.style.flexDirection = 'row-reverse'
+    registroEntrada.style.display = 'flex'
+    registroEntrada.style.justifyContent = 'flex-end'
+
+        registroEntrada.setAttribute('id', dados.id)
+        registroEntrada.classList.add('cardRegistro')
+
+        divPrincipalRegistro.appendChild(registroEntrada)
+        document.getElementById(dados.id).innerHTML += `<div class='imagemPerfilChat' id='img${dados.id}'></div>`;
+    })
+
+
+    var inputFileIMG = document.getElementById("inputFile")
+    const inserirImgChat = document.querySelector('#inserirImagem');
+
+    inputFileIMG.addEventListener('change', function (eventoImg) {
+        if (!(eventoImg.target && eventoImg.target.files && eventoImg.target.files.length > 0)) {
+            return;
+        }
+
+        var r = new FileReader();
+        r.onload = function () {
+            inserirImgChat.src = r.result;
+            var imagemPessoa = r.result;
+            var idPessoa = document.getElementById("meuId").value
+            socket.emit('enviaFoto', { imagemPessoa, idPessoa });
+        }
+        // Lê o arquivo e cria um link (o resultado vai ser enviado para o onload.
+        r.readAsDataURL(eventoImg.target.files[0]);
+    });
+
+    socket.on('enviaFoto', pessoa => {
+        console.log(pessoa)
+        document.getElementById(`img${pessoa.idPessoa}`).style = `background-image: url(${pessoa.imagemPessoa}); height='30px';`;
+    })
+
+    //função avisar que é necessário logar nome antes de tudo
+    function avisoLoadChat() {
+        Swal.fire({
+            title: 'AVISO: Antes de mais nada, insira seu nome!',
+            width: 600,
+            padding: '3em',
+            color: 'black',
+            background: '#fff url(https://img.freepik.com/premium-photo/watercolor-background-grey-watercolour-painting-textured-design-white-paper-background_7190-3250.jpg?w=2000)',
+            backdrop: `
+            #a4a4a4b7
+             url("https://sweetalert2.github.io/images/nyan-cat.gif")
+              left top
+              no-repeat
+            `
+        })
+    }
+
+    ///////// função fechar caixa de profile /////////////
+    function fechaCaixaProfile() {
+        document.querySelector("#caixaProfileChat").style.display = 'none'
+        document.querySelector("#caixaProfileChat").style.position = 'relative'
+    }
+
+    ///////// função abrir caixa de profile /////////////
+    function apareceCaixaProfile() {
+        if (document.querySelector("#nomeChat").disabled == true) {
+            document.querySelector("#caixaProfileChat").style.display = 'block'
+            document.querySelector("#caixaProfileChat").style.position = 'absolute'
+            document.querySelector("#inserirImagem").style.position = 'block'
+        } else {
+            alert("Você precisa inserir um nome de usuário antes de inserir uma foto de perfil")
+        }
+    }
 </script>
+<script src="javascript/scriptChat.js"></script>
+
 
 </html>
